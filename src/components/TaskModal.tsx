@@ -1,7 +1,8 @@
 import React from 'react';
-import { Circle, Trash2, X, Palette, CheckCircle2 } from 'lucide-react';
-import { Task } from '../types';
-import { COLUMNS, STATUS_COLORS, STATUS_BAR_CLASSES } from '../constants';
+import { Circle, Trash2, X, Palette, CheckCircle2, Calendar, User, Flag } from 'lucide-react';
+import { Task, Priority } from '../types';
+import { COLUMNS, STATUS_COLORS, STATUS_BAR_CLASSES, USERS, PRIORITIES } from '../constants';
+import DatePicker from './DatePicker';
 
 interface TaskModalProps {
     task: Task | null;
@@ -40,6 +41,9 @@ export default function TaskModal({ task, isOpen, onClose, onUpdate, onDelete }:
             <div className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] relative">
                 <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"><span className="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs uppercase font-bold tracking-wider dark:text-gray-300">{task.wbs ? `Task ${task.wbs}` : `Task-${task.id}`}</span></div>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <X size={20} />
+                    </button>
                 </div>
                 <div className="p-8 overflow-y-auto flex-1 pb-28">
                     <input type="text" value={task.title} onChange={(e) => handleChange('title', e.target.value)} className="text-3xl font-bold text-gray-900 dark:text-white w-full outline-none placeholder-gray-300 mb-6 bg-transparent" placeholder="Task Title" />
@@ -56,6 +60,75 @@ export default function TaskModal({ task, isOpen, onClose, onUpdate, onDelete }:
                                     </select>
                                     {/* Color preview dot */}
                                     <div className={`w-3 h-3 rounded-full ${STATUS_BAR_CLASSES[task.status]}`}></div>
+                                </div>
+                            </div>
+
+                            {/* Assignee Selector */}
+                            <div className="flex items-center h-8">
+                                <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><User size={14} /></div> Assignee</div>
+                                <select value={task.assignee} onChange={(e) => handleChange('assignee', e.target.value)} className="appearance-none cursor-pointer border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded px-2 py-1 text-sm text-gray-700 w-32 focus:border-gray-400 outline-none">
+                                    {USERS.map(u => <option key={u} value={u}>{u}</option>)}
+                                </select>
+                            </div>
+
+                            {/* Priority Selector */}
+                            <div className="flex items-center h-8">
+                                <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Flag size={14} /></div> Priority</div>
+                                <select value={task.priority} onChange={(e) => handleChange('priority', e.target.value as Priority)} className="appearance-none cursor-pointer border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded px-2 py-1 text-sm text-gray-700 w-32 focus:border-gray-400 outline-none">
+                                    {Object.entries(PRIORITIES).map(([key, value]) => (
+                                        <option key={key} value={key}>{value.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Date Sections */}
+                            <div className="md:col-span-2 flex flex-col gap-6 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                {/* Planning Dates */}
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Planning</h4>
+                                    <div className="flex items-center h-8">
+                                        <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> Start</div>
+                                        <DatePicker
+                                            value={task.planningStartDate || task.startDate || ''}
+                                            onChange={(date) => {
+                                                handleChange('planningStartDate', date);
+                                                handleChange('startDate', date); // Sync with display
+                                            }}
+                                            placeholder="MMM DD"
+                                        />
+                                    </div>
+                                    <div className="flex items-center h-8">
+                                        <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> End</div>
+                                        <DatePicker
+                                            value={task.planningDueDate || task.date || ''}
+                                            onChange={(date) => {
+                                                handleChange('planningDueDate', date);
+                                                handleChange('date', date); // Sync with display
+                                            }}
+                                            placeholder="MMM DD"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Actual Dates */}
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actual</h4>
+                                    <div className="flex items-center h-8">
+                                        <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> Start</div>
+                                        <DatePicker
+                                            value={task.actualStartDate || ''}
+                                            onChange={(date) => handleChange('actualStartDate', date)}
+                                            placeholder="MMM DD"
+                                        />
+                                    </div>
+                                    <div className="flex items-center h-8">
+                                        <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> End</div>
+                                        <DatePicker
+                                            value={task.actualDueDate || ''}
+                                            onChange={(date) => handleChange('actualDueDate', date)}
+                                            placeholder="MMM DD"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

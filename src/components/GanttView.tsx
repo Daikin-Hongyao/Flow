@@ -73,7 +73,13 @@ export default function GanttView({ tasks, onEditTask, onUpdateTaskDate, onReord
     const cellWidth = viewScale === 'day' ? 40 : 60;
     const daysPerCell = viewScale === 'day' ? 1 : 7;
 
-    const dates = tasks.map((t: Task) => parseTaskDate(t.date));
+    const dates = tasks.flatMap((t: Task) => {
+        const d = [parseTaskDate(t.date)];
+        if (t.startDate) d.push(parseTaskDate(t.startDate));
+        if (t.actualStartDate) d.push(parseTaskDate(t.actualStartDate));
+        if (t.actualDueDate) d.push(parseTaskDate(t.actualDueDate));
+        return d;
+    });
     const minDate = new Date(Math.min.apply(null, dates as any));
     const maxDate = new Date(Math.max.apply(null, dates as any));
 
@@ -332,14 +338,31 @@ export default function GanttView({ tasks, onEditTask, onUpdateTaskDate, onReord
                     </div>
                     <div className="pt-0">
                         {tasks.map((task: Task) => {
-                            const endDate = parseTaskDate(task.date);
-                            const startDate = task.startDate ? parseTaskDate(task.startDate) : new Date(endDate.getTime() - 3 * 24 * 60 * 60 * 1000);
+                            // Planning Dates (Foreground)
+                            const planEndDate = parseTaskDate(task.date);
+                            const planStartDate = task.startDate ? parseTaskDate(task.startDate) : new Date(planEndDate.getTime() - 3 * 24 * 60 * 60 * 1000);
 
-                            const startOffset = (startDate.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24);
-                            const durationDays = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+                            const planStartOffset = (planStartDate.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24);
+                            const planDurationDays = (planEndDate.getTime() - planStartDate.getTime()) / (1000 * 60 * 60 * 24);
 
-                            const startUnits = startOffset / daysPerCell;
-                            const durationUnits = Math.max(0.5, durationDays / daysPerCell); // Ensure at least some width
+                            const planStartUnits = planStartOffset / daysPerCell;
+                            const planDurationUnits = Math.max(0.5, planDurationDays / daysPerCell);
+
+                            // Actual Dates (Background)
+                            let actualStartUnits = 0;
+                            let actualDurationUnits = 0;
+                            const hasActuals = task.actualStartDate && task.actualDueDate;
+
+                            if (hasActuals) {
+                                const actStartDate = parseTaskDate(task.actualStartDate!);
+                                const actEndDate = parseTaskDate(task.actualDueDate!);
+
+                                const actStartOffset = (actStartDate.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24);
+                                const actDurationDays = (actEndDate.getTime() - actStartDate.getTime()) / (1000 * 60 * 60 * 24);
+
+                                actualStartUnits = actStartOffset / daysPerCell;
+                                actualDurationUnits = Math.max(0.5, actDurationDays / daysPerCell);
+                            }
 
                             const isDragging = draggingBar?.id === task.id;
                             const isResizing = resizing?.id === task.id;
@@ -362,18 +385,32 @@ export default function GanttView({ tasks, onEditTask, onUpdateTaskDate, onReord
 
                             return (
                                 <div key={task.id} className="h-10 border-b border-transparent flex items-center relative group">
+                                    {/* Actual Bar (Background) */}
+                                    {hasActuals && (
+                                        <div
+                                            className={`absolute h-6 rounded-sm opacity-40 ${STATUS_BAR_CLASSES[task.status]}`}
+                                            style={{
+                                                left: actualStartUnits * cellWidth,
+                                                width: Math.max(cellWidth, actualDurationUnits * cellWidth),
+                                                zIndex: 4,
+                                            }}
+                                            title={`Actual: ${task.actualStartDate} - ${task.actualDueDate}`}
+                                        />
+                                    )}
+
+                                    {/* Planning Bar (Foreground, Interactive) */}
                                     <div onMouseDown={(e) => handleBarMouseDown(e, task)}
-                                        className={`absolute h-6 rounded shadow-sm border border-white/10 flex items-center px-2 text-[10px] font-medium overflow-hidden whitespace-nowrap transition-none select-none
+                                        className={`absolute h-4 rounded shadow-sm border border-white/20 flex items-center px-2 text-[10px] font-medium overflow-hidden whitespace-nowrap transition-none select-none
                         ${isDragging || isResizing ? 'z-50 ring-2 ring-gray-400 shadow-lg' : 'cursor-grab hover:opacity-90'}
                         ${STATUS_BAR_CLASSES[task.status]}
                       `}
                                         style={{
-                                            left: startUnits * cellWidth + (isDragging ? dragOffset : leftChange),
-                                            width: Math.max(cellWidth, durationUnits * cellWidth + widthChange),
-                                            transform: isDragging ? `translateX(0px)` : 'none', // Handled by left/width now for resizing
-                                            zIndex: isDragging || isResizing ? 50 : 5,
+                                            left: planStartUnits * cellWidth + (isDragging ? dragOffset : leftChange),
+                                            width: Math.max(cellWidth, planDurationUnits * cellWidth + widthChange),
+                                            transform: isDragging ? `translateX(0px)` : 'none',
+                                            zIndex: isDragging || isResizing ? 50 : 10,
                                         }}
-                                        title="Drag to move, drag edges to resize"
+                                        title={`Planning: ${formatDateForDisplay(planStartDate)} - ${task.date}`}
                                     >
                                         {/* Left Resize Handle */}
                                         <div
@@ -381,7 +418,7 @@ export default function GanttView({ tasks, onEditTask, onUpdateTaskDate, onReord
                                             onMouseDown={(e) => handleResizeStart(e, task, 'left')}
                                         />
 
-                                        <span className="truncate w-full">{task.title}</span>
+                                        <span className="truncate w-full drop-shadow-md">{task.title}</span>
 
                                         {/* Right Resize Handle */}
                                         <div

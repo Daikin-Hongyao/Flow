@@ -136,10 +136,18 @@ export default function App() {
             <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700"></div>
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 p-2 rounded-md transition-all active:scale-95"
+              className={`p-2 rounded-md transition-all active:scale-95 group
+                ${darkMode
+                  ? 'bg-gray-800 text-gray-400 hover:text-yellow-300 hover:bg-gray-700'
+                  : 'bg-gray-100 text-gray-600 hover:text-yellow-500 hover:bg-yellow-50'
+                }`}
               title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+              {darkMode ? (
+                <Sun size={16} className="group-hover:animate-sun-shine group-hover:drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]" />
+              ) : (
+                <Moon size={16} className="group-hover:animate-moon-eclipse group-hover:fill-current" />
+              )}
             </button>
           </div>
         </div>

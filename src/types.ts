@@ -9,8 +9,12 @@ export interface Task {
     priority: Priority;
     assignee: string;
     tags: string[];
-    date: string; // End Date / Due Date
-    startDate?: string; // Optional Start Date
+    date: string; // End Date / Due Date (Display/Planning)
+    startDate?: string; // Optional Start Date (Display/Planning)
+    planningStartDate?: string;
+    planningDueDate?: string;
+    actualStartDate?: string;
+    actualDueDate?: string;
     projectId: string;
     description: string;
 }
