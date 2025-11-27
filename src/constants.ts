@@ -31,14 +31,46 @@ export const PRIORITIES: Record<Priority, { color: string; bg: string; label: st
 };
 
 export const INITIAL_TASKS: Task[] = [
-    { id: '1', wbs: '1.0', title: 'Product Launch Phase', status: 'in-progress', priority: 'high', assignee: 'Alex', tags: ['Core'], date: 'Oct 30', projectId: 'p1', description: 'Main tracking item.' },
-    { id: '2', wbs: '1.1', title: 'Design System V2', status: 'done', priority: 'high', assignee: 'Alex', tags: ['Design'], date: 'Oct 24', projectId: 'p1', description: 'Update palette.' },
-    { id: '3', wbs: '1.2', title: 'User Interview Analysis', status: 'todo', priority: 'low', assignee: 'Alex', tags: ['Research'], date: 'Oct 28', projectId: 'p1', description: 'Collate feedback.' },
-    { id: '4', wbs: '1.2.1', title: 'Compile Survey Data', status: 'todo', priority: 'low', assignee: 'Mike', tags: ['Research'], date: 'Oct 27', projectId: 'p1', description: 'Raw data processing.' },
-    { id: '5', wbs: '2.0', title: 'Marketing Campaign', status: 'in-progress', priority: 'medium', assignee: 'Sarah', tags: ['Marketing'], date: 'Oct 31', projectId: 'p2', description: 'Q4 push.' },
-    { id: '6', wbs: '2.1', title: 'Q4 Strategy Draft', status: 'in-progress', priority: 'medium', assignee: 'Sarah', tags: ['Marketing'], date: 'Oct 26', projectId: 'p2', description: 'Initial draft.' },
-    { id: '7', wbs: '2.2', title: 'Landing Page Update', status: 'todo', priority: 'medium', assignee: 'Sarah', tags: ['Dev'], date: 'Oct 29', projectId: 'p2', description: 'New testimonials.' },
-    { id: '8', wbs: '3.0', title: 'Finance Review', status: 'review', priority: 'high', assignee: 'User', tags: ['Finance'], date: 'Oct 30', projectId: 'p1', description: 'Q3 Report.' },
+    { 
+        id: '1', wbs: '1.0', title: 'Product Launch Phase', status: 'in-progress', priority: 'high', assignee: 'Alex', tags: ['Core'], projectId: 'p1', description: 'Main tracking item.',
+        date: 'Oct 30', startDate: 'Oct 01',
+        plannedStartDate: 'Oct 01', plannedEndDate: 'Oct 28' // Slipping 2 days
+    },
+    { 
+        id: '2', wbs: '1.1', title: 'Design System V2', status: 'done', priority: 'high', assignee: 'Alex', tags: ['Design'], projectId: 'p1', description: 'Update palette.',
+        date: 'Oct 24', startDate: 'Oct 10',
+        plannedStartDate: 'Oct 10', plannedEndDate: 'Oct 24' // On time
+    },
+    { 
+        id: '3', wbs: '1.2', title: 'User Interview Analysis', status: 'todo', priority: 'low', assignee: 'Alex', tags: ['Research'], projectId: 'p1', description: 'Collate feedback.',
+        date: 'Oct 28', startDate: 'Oct 25',
+        plannedStartDate: 'Oct 20', plannedEndDate: 'Oct 25' // Started late
+    },
+    { 
+        id: '4', wbs: '1.2.1', title: 'Compile Survey Data', status: 'todo', priority: 'low', assignee: 'Mike', tags: ['Research'], projectId: 'p1', description: 'Raw data processing.',
+        date: 'Oct 27', startDate: 'Oct 26',
+        plannedStartDate: 'Oct 26', plannedEndDate: 'Oct 27' 
+    },
+    { 
+        id: '5', wbs: '2.0', title: 'Marketing Campaign', status: 'in-progress', priority: 'medium', assignee: 'Sarah', tags: ['Marketing'], projectId: 'p2', description: 'Q4 push.',
+        date: 'Oct 31', startDate: 'Oct 15',
+        plannedStartDate: 'Oct 15', plannedEndDate: 'Nov 05' // Finishing early?
+    },
+    { 
+        id: '6', wbs: '2.1', title: 'Q4 Strategy Draft', status: 'in-progress', priority: 'medium', assignee: 'Sarah', tags: ['Marketing'], projectId: 'p2', description: 'Initial draft.',
+        date: 'Oct 26', startDate: 'Oct 20',
+        plannedStartDate: 'Oct 20', plannedEndDate: 'Oct 26'
+    },
+    { 
+        id: '7', wbs: '2.2', title: 'Landing Page Update', status: 'todo', priority: 'medium', assignee: 'Sarah', tags: ['Dev'], projectId: 'p2', description: 'New testimonials.',
+        date: 'Oct 29', startDate: 'Oct 28',
+        plannedStartDate: 'Oct 25', plannedEndDate: 'Oct 28'
+    },
+    { 
+        id: '8', wbs: '3.0', title: 'Finance Review', status: 'review', priority: 'high', assignee: 'User', tags: ['Finance'], projectId: 'p1', description: 'Q3 Report.',
+        date: 'Oct 30', startDate: 'Oct 29',
+        plannedStartDate: 'Oct 29', plannedEndDate: 'Oct 30'
+    },
 ];
 
 export const INITIAL_PROJECTS: Project[] = [

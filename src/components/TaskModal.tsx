@@ -89,10 +89,9 @@ export default function TaskModal({ task, isOpen, onClose, onUpdate, onDelete }:
                                     <div className="flex items-center h-8">
                                         <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> Start</div>
                                         <DatePicker
-                                            value={task.planningStartDate || task.startDate || ''}
+                                            value={task.plannedStartDate || task.startDate || ''}
                                             onChange={(date) => {
-                                                handleChange('planningStartDate', date);
-                                                handleChange('startDate', date); // Sync with display
+                                                onUpdate({ ...task, plannedStartDate: date, startDate: date });
                                             }}
                                             placeholder="MMM DD"
                                         />
@@ -100,10 +99,9 @@ export default function TaskModal({ task, isOpen, onClose, onUpdate, onDelete }:
                                     <div className="flex items-center h-8">
                                         <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> End</div>
                                         <DatePicker
-                                            value={task.planningDueDate || task.date || ''}
+                                            value={task.plannedEndDate || task.date || ''}
                                             onChange={(date) => {
-                                                handleChange('planningDueDate', date);
-                                                handleChange('date', date); // Sync with display
+                                                onUpdate({ ...task, plannedEndDate: date, date: date });
                                             }}
                                             placeholder="MMM DD"
                                         />
@@ -124,8 +122,8 @@ export default function TaskModal({ task, isOpen, onClose, onUpdate, onDelete }:
                                     <div className="flex items-center h-8">
                                         <div className="w-24 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2"><div className="w-4"><Calendar size={14} /></div> End</div>
                                         <DatePicker
-                                            value={task.actualDueDate || ''}
-                                            onChange={(date) => handleChange('actualDueDate', date)}
+                                            value={task.actualEndDate || ''}
+                                            onChange={(date) => handleChange('actualEndDate', date)}
                                             placeholder="MMM DD"
                                         />
                                     </div>

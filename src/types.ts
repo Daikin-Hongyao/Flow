@@ -11,12 +11,27 @@ export interface Task {
     tags: string[];
     date: string; // End Date / Due Date (Display/Planning)
     startDate?: string; // Optional Start Date (Display/Planning)
-    planningStartDate?: string;
-    planningDueDate?: string;
+    plannedStartDate?: string;
+    plannedEndDate?: string;
     actualStartDate?: string;
-    actualDueDate?: string;
+    actualEndDate?: string;
     projectId: string;
     description: string;
+}
+
+interface DraggingBarState {
+    id: string;
+    startX: number;
+    currentX: number;
+}
+
+interface ResizingState {
+    id: string;
+    side: 'left' | 'right';
+    startX: number;
+    currentX: number;
+    initialStart: Date;
+    initialEnd: Date;
 }
 
 export interface Project {
